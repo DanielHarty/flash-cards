@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Page configuration
 st.set_page_config(
-	page_title="Flash Cards v0.0.5",
+	page_title="Flash Cards v0.0.6",
 	page_icon="📚",
 	layout="wide",
 	initial_sidebar_state="expanded"
@@ -71,13 +71,11 @@ def load_packs():
 
 def start_quiz(category):
 	"""Start a quiz for the selected category"""
-	st.write(f"🔍 Debug: start_quiz called with category: {category}")
 	st.session_state.current_category = category
 	st.session_state.current_question_index = 0
 	st.session_state.quiz_started = True
 	st.session_state.user_answer = ""
 	st.session_state.feedback = ""
-	st.write(f"🔍 Debug: start_quiz completed - quiz_started: {st.session_state.quiz_started}, current_category: {st.session_state.current_category}")
 
 def submit_answer():
 	"""Process the user's answer"""
@@ -114,16 +112,10 @@ def reset_quiz():
 	st.session_state.feedback = ""
 
 def main():
-	# Debug: Show initial state
-	st.write(f"🔍 Debug: Starting main() - categories count: {len(st.session_state.categories)}")
-	
 	# Load default pack and all packs (only if categories is empty)
 	copy_default_pack()
 	if not st.session_state.categories:
-		st.write("🔍 Debug: Loading packs from filesystem")
 		load_packs()
-	else:
-		st.write("🔍 Debug: Skipping filesystem load, categories already exist")
 	
 	# Main title
 	st.title("📚 Flash Cards")
@@ -136,12 +128,6 @@ def main():
 		if st.session_state.categories:
 			category_list = sorted(st.session_state.categories.keys())
 			
-			# Debug: Show category list and index calculation
-			st.write(f"🔍 Debug: Category list: {category_list}")
-			st.write(f"🔍 Debug: Quiz started: {st.session_state.quiz_started}")
-			st.write(f"🔍 Debug: Current category: {st.session_state.current_category}")
-			st.write(f"🔍 Debug: Session state categories: {list(st.session_state.categories.keys())}")
-			
 			# Calculate index
 			if not st.session_state.quiz_started:
 				selected_index = 0
@@ -150,8 +136,6 @@ def main():
 					selected_index = category_list.index(st.session_state.current_category)
 				else:
 					selected_index = 0
-			
-			st.write(f"🔍 Debug: Selected index: {selected_index}")
 			
 			# Category selection
 			selected_category = st.selectbox(
@@ -163,14 +147,7 @@ def main():
 			
 			# Start quiz button
 			if st.button("🚀 Start Quiz", type="primary", use_container_width=True):
-				st.write(f"🔍 Debug: Starting quiz for category: {selected_category}")
-				st.write(f"🔍 Debug: Selected category exists in categories: {selected_category in st.session_state.categories}")
-				if selected_category in st.session_state.categories:
-					st.write(f"🔍 Debug: Questions in category: {list(st.session_state.categories[selected_category].keys())}")
 				start_quiz(selected_category)
-				st.write(f"🔍 Debug: After start_quiz - quiz_started: {st.session_state.quiz_started}")
-				st.write(f"🔍 Debug: After start_quiz - current_category: {st.session_state.current_category}")
-				st.rerun()
 			
 			# Reset quiz button
 			if st.button("🔄 Reset Quiz", use_container_width=True):
@@ -192,22 +169,11 @@ def main():
 					# Read and validate the JSON
 					imported_categories = json.load(uploaded_file)
 					
-					# Debug: Show what we're importing
-					st.write(f"🔍 Debug: Importing {len(imported_categories)} categories")
-					st.write(f"🔍 Debug: Categories to import: {list(imported_categories.keys())}")
-					
 					# Add to existing categories (session-only, not saved to filesystem)
 					for category_name, questions in imported_categories.items():
 						st.session_state.categories[category_name] = questions
 					
-					# Debug: Show what's in session state after import
-					st.write(f"🔍 Debug: Session state now has {len(st.session_state.categories)} categories")
-					st.write(f"🔍 Debug: Session state categories: {list(st.session_state.categories.keys())}")
-					
 					st.success(f"✅ Imported {len(imported_categories)} category/categories! (Session only - will be lost on refresh)")
-					
-					# Force page refresh to update the dropdown
-					st.rerun()
 					
 				except Exception as e:
 					st.error(f"❌ Error importing file: {e}")
@@ -218,17 +184,10 @@ def main():
 			for category, questions in st.session_state.categories.items():
 				st.write(f"**{category}**: {len(questions)} questions")
 			
-			# Debug info
-			with st.expander("🔍 Debug Info"):
-				st.write(f"Total categories: {len(st.session_state.categories)}")
-				st.write(f"Categories: {list(st.session_state.categories.keys())}")
-				st.write(f"Quiz started: {st.session_state.quiz_started}")
-				st.write(f"Current category: {st.session_state.current_category}")
 		else:
 			st.warning("No flash card packs found. Please import a JSON file.")
 	
 	# Main content area
-	st.write(f"🔍 Debug: Main content check - quiz_started: {st.session_state.quiz_started}, current_category: {st.session_state.current_category}")
 	if st.session_state.quiz_started and st.session_state.current_category:
 		# Quiz interface
 		questions = list(st.session_state.categories[st.session_state.current_category].keys())
@@ -258,7 +217,6 @@ def main():
 		with col2:
 			if st.button("Submit", type="primary", use_container_width=True):
 				submit_answer()
-				st.rerun()
 		
 		# Feedback display
 		if st.session_state.feedback:
