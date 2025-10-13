@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Page configuration
 st.set_page_config(
-	page_title="Flash Cards v0.0.4",
+	page_title="Flash Cards v0.0.5",
 	page_icon="📚",
 	layout="wide",
 	initial_sidebar_state="expanded"
@@ -71,11 +71,13 @@ def load_packs():
 
 def start_quiz(category):
 	"""Start a quiz for the selected category"""
+	st.write(f"🔍 Debug: start_quiz called with category: {category}")
 	st.session_state.current_category = category
 	st.session_state.current_question_index = 0
 	st.session_state.quiz_started = True
 	st.session_state.user_answer = ""
 	st.session_state.feedback = ""
+	st.write(f"🔍 Debug: start_quiz completed - quiz_started: {st.session_state.quiz_started}, current_category: {st.session_state.current_category}")
 
 def submit_answer():
 	"""Process the user's answer"""
@@ -161,7 +163,14 @@ def main():
 			
 			# Start quiz button
 			if st.button("🚀 Start Quiz", type="primary", use_container_width=True):
+				st.write(f"🔍 Debug: Starting quiz for category: {selected_category}")
+				st.write(f"🔍 Debug: Selected category exists in categories: {selected_category in st.session_state.categories}")
+				if selected_category in st.session_state.categories:
+					st.write(f"🔍 Debug: Questions in category: {list(st.session_state.categories[selected_category].keys())}")
 				start_quiz(selected_category)
+				st.write(f"🔍 Debug: After start_quiz - quiz_started: {st.session_state.quiz_started}")
+				st.write(f"🔍 Debug: After start_quiz - current_category: {st.session_state.current_category}")
+				st.rerun()
 			
 			# Reset quiz button
 			if st.button("🔄 Reset Quiz", use_container_width=True):
@@ -219,6 +228,7 @@ def main():
 			st.warning("No flash card packs found. Please import a JSON file.")
 	
 	# Main content area
+	st.write(f"🔍 Debug: Main content check - quiz_started: {st.session_state.quiz_started}, current_category: {st.session_state.current_category}")
 	if st.session_state.quiz_started and st.session_state.current_category:
 		# Quiz interface
 		questions = list(st.session_state.categories[st.session_state.current_category].keys())
