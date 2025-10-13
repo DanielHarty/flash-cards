@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Page configuration
 st.set_page_config(
-	page_title="Flash Cards v0.0.7",
+	page_title="Flash Cards v0.0.8",
 	page_icon="📚",
 	layout="wide",
 	initial_sidebar_state="expanded"
@@ -26,8 +26,6 @@ if 'user_answer' not in st.session_state:
 	st.session_state.user_answer = ""
 if 'feedback' not in st.session_state:
 	st.session_state.feedback = ""
-if 'category_update_counter' not in st.session_state:
-	st.session_state.category_update_counter = 0
 
 def get_packs_directory():
 	"""Get the directory for storing flash card packs"""
@@ -69,9 +67,6 @@ def load_packs():
 			except Exception as e:
 				st.error(f"Error loading {filename}: {e}")
 	
-	# Increment counter to ensure selectbox updates
-	if loaded_count > 0:
-		st.session_state.category_update_counter += 1
 	
 	return loaded_count
 
@@ -147,13 +142,13 @@ def main():
 			selected_category = st.selectbox(
 				"Choose a category:",
 				category_list,
-				index=selected_index,
-				key=f"category_select_{st.session_state.category_update_counter}"  # Force refresh when categories change
+				index=selected_index
 			)
 			
 			# Start quiz button
 			if st.button("🚀 Start Quiz", type="primary", use_container_width=True):
 				start_quiz(selected_category)
+				st.rerun()
 			
 			# Reset quiz button
 			if st.button("🔄 Reset Quiz", use_container_width=True):
@@ -179,10 +174,10 @@ def main():
 					for category_name, questions in imported_categories.items():
 						st.session_state.categories[category_name] = questions
 					
-					# Increment counter to force selectbox update
-					st.session_state.category_update_counter += 1
-					
 					st.success(f"✅ Imported {len(imported_categories)} category/categories! (Session only - will be lost on refresh)")
+					
+					# Force page refresh to update the dropdown
+					st.rerun()
 					
 				except Exception as e:
 					st.error(f"❌ Error importing file: {e}")
@@ -226,6 +221,7 @@ def main():
 		with col2:
 			if st.button("Submit", type="primary", use_container_width=True):
 				submit_answer()
+				st.rerun()
 		
 		# Feedback display
 		if st.session_state.feedback:
