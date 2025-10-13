@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Page configuration
 st.set_page_config(
-	page_title="Flash Cards v0.0.6",
+	page_title="Flash Cards v0.0.7",
 	page_icon="📚",
 	layout="wide",
 	initial_sidebar_state="expanded"
@@ -26,6 +26,8 @@ if 'user_answer' not in st.session_state:
 	st.session_state.user_answer = ""
 if 'feedback' not in st.session_state:
 	st.session_state.feedback = ""
+if 'category_update_counter' not in st.session_state:
+	st.session_state.category_update_counter = 0
 
 def get_packs_directory():
 	"""Get the directory for storing flash card packs"""
@@ -66,6 +68,10 @@ def load_packs():
 					loaded_count += 1
 			except Exception as e:
 				st.error(f"Error loading {filename}: {e}")
+	
+	# Increment counter to ensure selectbox updates
+	if loaded_count > 0:
+		st.session_state.category_update_counter += 1
 	
 	return loaded_count
 
@@ -142,7 +148,7 @@ def main():
 				"Choose a category:",
 				category_list,
 				index=selected_index,
-				key=f"category_select_{len(category_list)}"  # Force refresh when categories change
+				key=f"category_select_{st.session_state.category_update_counter}"  # Force refresh when categories change
 			)
 			
 			# Start quiz button
@@ -172,6 +178,9 @@ def main():
 					# Add to existing categories (session-only, not saved to filesystem)
 					for category_name, questions in imported_categories.items():
 						st.session_state.categories[category_name] = questions
+					
+					# Increment counter to force selectbox update
+					st.session_state.category_update_counter += 1
 					
 					st.success(f"✅ Imported {len(imported_categories)} category/categories! (Session only - will be lost on refresh)")
 					
