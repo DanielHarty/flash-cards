@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Page configuration
 st.set_page_config(
-	page_title="Flash Cards v0.0.2",
+	page_title="Flash Cards v0.0.3",
 	page_icon="📚",
 	layout="wide",
 	initial_sidebar_state="expanded"
@@ -134,11 +134,28 @@ def main():
 		if st.session_state.categories:
 			category_list = sorted(st.session_state.categories.keys())
 			
+			# Debug: Show category list and index calculation
+			st.write(f"🔍 Debug: Category list: {category_list}")
+			st.write(f"🔍 Debug: Quiz started: {st.session_state.quiz_started}")
+			st.write(f"🔍 Debug: Current category: {st.session_state.current_category}")
+			
+			# Calculate index
+			if not st.session_state.quiz_started:
+				selected_index = 0
+			else:
+				if st.session_state.current_category in category_list:
+					selected_index = category_list.index(st.session_state.current_category)
+				else:
+					selected_index = 0
+			
+			st.write(f"🔍 Debug: Selected index: {selected_index}")
+			
 			# Category selection
 			selected_category = st.selectbox(
 				"Choose a category:",
 				category_list,
-				index=0 if not st.session_state.quiz_started else category_list.index(st.session_state.current_category) if st.session_state.current_category in category_list else 0
+				index=selected_index,
+				key=f"category_select_{len(category_list)}"  # Force refresh when categories change
 			)
 			
 			# Start quiz button
