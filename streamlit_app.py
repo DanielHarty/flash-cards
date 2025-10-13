@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Page configuration
 st.set_page_config(
-	page_title="Flash Cards",
+	page_title="Flash Cards v0.0.2",
 	page_icon="📚",
 	layout="wide",
 	initial_sidebar_state="expanded"
@@ -112,10 +112,16 @@ def reset_quiz():
 	st.session_state.feedback = ""
 
 def main():
+	# Debug: Show initial state
+	st.write(f"🔍 Debug: Starting main() - categories count: {len(st.session_state.categories)}")
+	
 	# Load default pack and all packs (only if categories is empty)
 	copy_default_pack()
 	if not st.session_state.categories:
+		st.write("🔍 Debug: Loading packs from filesystem")
 		load_packs()
+	else:
+		st.write("🔍 Debug: Skipping filesystem load, categories already exist")
 	
 	# Main title
 	st.title("📚 Flash Cards")
@@ -159,12 +165,19 @@ def main():
 					# Read and validate the JSON
 					imported_categories = json.load(uploaded_file)
 					
+					# Debug: Show what we're importing
+					st.write(f"🔍 Debug: Importing {len(imported_categories)} categories")
+					st.write(f"🔍 Debug: Categories to import: {list(imported_categories.keys())}")
+					
 					# Add to existing categories (session-only, not saved to filesystem)
 					for category_name, questions in imported_categories.items():
 						st.session_state.categories[category_name] = questions
 					
+					# Debug: Show what's in session state after import
+					st.write(f"🔍 Debug: Session state now has {len(st.session_state.categories)} categories")
+					st.write(f"🔍 Debug: Session state categories: {list(st.session_state.categories.keys())}")
+					
 					st.success(f"✅ Imported {len(imported_categories)} category/categories! (Session only - will be lost on refresh)")
-					st.rerun()
 					
 				except Exception as e:
 					st.error(f"❌ Error importing file: {e}")
@@ -174,6 +187,13 @@ def main():
 			st.header("📊 Pack Info")
 			for category, questions in st.session_state.categories.items():
 				st.write(f"**{category}**: {len(questions)} questions")
+			
+			# Debug info
+			with st.expander("🔍 Debug Info"):
+				st.write(f"Total categories: {len(st.session_state.categories)}")
+				st.write(f"Categories: {list(st.session_state.categories.keys())}")
+				st.write(f"Quiz started: {st.session_state.quiz_started}")
+				st.write(f"Current category: {st.session_state.current_category}")
 		else:
 			st.warning("No flash card packs found. Please import a JSON file.")
 	
