@@ -60,10 +60,11 @@ def load_packs():
 				with open(file_path, 'r') as f:
 					imported_categories = json.load(f)
 				
-				# Add imported categories to existing categories
+				# Add imported categories to existing categories (only if not already present)
 				for category_name, questions in imported_categories.items():
-					st.session_state.categories[category_name] = questions
-					loaded_count += 1
+					if category_name not in st.session_state.categories:
+						st.session_state.categories[category_name] = questions
+						loaded_count += 1
 			except Exception as e:
 				st.error(f"Error loading {filename}: {e}")
 	
@@ -156,6 +157,15 @@ def main():
 				try:
 					# Read and validate the JSON
 					imported_categories = json.load(uploaded_file)
+					
+					# Save the uploaded file to the packs directory
+					packs_dir = get_packs_directory()
+					uploaded_file_path = os.path.join(packs_dir, uploaded_file.name)
+					
+					# Reset file pointer and save
+					uploaded_file.seek(0)
+					with open(uploaded_file_path, 'wb') as f:
+						f.write(uploaded_file.getvalue())
 					
 					# Add to existing categories
 					for category_name, questions in imported_categories.items():
