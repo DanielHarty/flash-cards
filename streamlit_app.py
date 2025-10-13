@@ -60,11 +60,10 @@ def load_packs():
 				with open(file_path, 'r') as f:
 					imported_categories = json.load(f)
 				
-				# Add imported categories to existing categories (only if not already present)
+				# Add imported categories to existing categories
 				for category_name, questions in imported_categories.items():
-					if category_name not in st.session_state.categories:
-						st.session_state.categories[category_name] = questions
-						loaded_count += 1
+					st.session_state.categories[category_name] = questions
+					loaded_count += 1
 			except Exception as e:
 				st.error(f"Error loading {filename}: {e}")
 	
@@ -113,9 +112,10 @@ def reset_quiz():
 	st.session_state.feedback = ""
 
 def main():
-	# Load default pack and all packs
+	# Load default pack and all packs (only if categories is empty)
 	copy_default_pack()
-	load_packs()
+	if not st.session_state.categories:
+		load_packs()
 	
 	# Main title
 	st.title("📚 Flash Cards")
@@ -147,6 +147,7 @@ def main():
 			
 			# File upload for importing new packs
 			st.header("📥 Import Pack")
+			st.info("💡 Uploaded packs are session-only and will be lost when you refresh the page.")
 			uploaded_file = st.file_uploader(
 				"Upload a JSON flash card pack:",
 				type=['json'],
@@ -158,20 +159,11 @@ def main():
 					# Read and validate the JSON
 					imported_categories = json.load(uploaded_file)
 					
-					# Save the uploaded file to the packs directory
-					packs_dir = get_packs_directory()
-					uploaded_file_path = os.path.join(packs_dir, uploaded_file.name)
-					
-					# Reset file pointer and save
-					uploaded_file.seek(0)
-					with open(uploaded_file_path, 'wb') as f:
-						f.write(uploaded_file.getvalue())
-					
-					# Add to existing categories
+					# Add to existing categories (session-only, not saved to filesystem)
 					for category_name, questions in imported_categories.items():
 						st.session_state.categories[category_name] = questions
 					
-					st.success(f"✅ Imported {len(imported_categories)} category/categories!")
+					st.success(f"✅ Imported {len(imported_categories)} category/categories! (Session only - will be lost on refresh)")
 					st.rerun()
 					
 				except Exception as e:
