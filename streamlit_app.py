@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Page configuration
 st.set_page_config(
-	page_title="Flash Cards v0.0.3",
+	page_title="Flash Cards v0.0.4",
 	page_icon="📚",
 	layout="wide",
 	initial_sidebar_state="expanded"
@@ -138,6 +138,7 @@ def main():
 			st.write(f"🔍 Debug: Category list: {category_list}")
 			st.write(f"🔍 Debug: Quiz started: {st.session_state.quiz_started}")
 			st.write(f"🔍 Debug: Current category: {st.session_state.current_category}")
+			st.write(f"🔍 Debug: Session state categories: {list(st.session_state.categories.keys())}")
 			
 			# Calculate index
 			if not st.session_state.quiz_started:
@@ -195,6 +196,9 @@ def main():
 					st.write(f"🔍 Debug: Session state categories: {list(st.session_state.categories.keys())}")
 					
 					st.success(f"✅ Imported {len(imported_categories)} category/categories! (Session only - will be lost on refresh)")
+					
+					# Force page refresh to update the dropdown
+					st.rerun()
 					
 				except Exception as e:
 					st.error(f"❌ Error importing file: {e}")
