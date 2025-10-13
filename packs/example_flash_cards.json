@@ -1,0 +1,39 @@
+{
+	"geography": {
+		"What is the capital of France?": "paris",
+		"What is the largest planet in our solar system?": "jupiter",
+		"Which continent is Egypt in?": "africa"
+	},
+	"math": {
+		"What is 5 + 7?": "12",
+		"What is 9 x 9?": "81",
+		"What is the square root of 16?": "4"
+	},
+	"literature": {
+		"Who wrote 'Romeo and Juliet'?": "shakespeare",
+		"Who is the author of '1984'?": "orwell",
+		"Who wrote 'The Hobbit'?": "tolkien"
+	},
+	"science": {
+		"What is the chemical symbol for gold?": "au",
+		"What is the speed of light in vacuum (in m/s)?": "299792458",
+		"What is the powerhouse of the cell?": "mitochondria",
+		"What planet is known as the Red Planet?": "mars",
+		"What is H2O commonly known as?": "water"
+	},
+	"history": {
+		"In what year did World War II end?": "1945",
+		"Who was the first President of the United States?": "washington",
+		"What year did the Berlin Wall fall?": "1989",
+		"Who discovered America in 1492?": "columbus",
+		"What ancient wonder of the world still stands today?": "great pyramid"
+	},
+	"animals": {
+		"What is the largest mammal in the world?": "blue whale",
+		"What is the fastest land animal?": "cheetah",
+		"How many legs does a spider have?": "8",
+		"What is a baby kangaroo called?": "joey",
+		"What animal is known as the 'King of the Jungle'?": "lion"
+	}
+}
+
