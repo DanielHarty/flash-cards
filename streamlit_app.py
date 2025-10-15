@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Page configuration
 st.set_page_config(
-	page_title="Flash Cards v0.0.9",
+	page_title="Flash Cards v0.0.10",
 	page_icon="📚",
 	layout="wide",
 	initial_sidebar_state="expanded"
@@ -28,6 +28,8 @@ if 'feedback' not in st.session_state:
 	st.session_state.feedback = ""
 if 'import_message' not in st.session_state:
 	st.session_state.import_message = None
+if 'categories_just_imported' not in st.session_state:
+	st.session_state.categories_just_imported = False
 
 def get_packs_directory():
 	"""Get the directory for storing flash card packs"""
@@ -172,21 +174,30 @@ def main():
 				st.session_state.import_message = None
 			
 			if uploaded_file is not None:
-				try:
-					# Read and validate the JSON
-					imported_categories = json.load(uploaded_file)
-					
-					# Add to existing categories (session-only, not saved to filesystem)
-					new_count = 0
-					for category_name, questions in imported_categories.items():
-						st.session_state.categories[category_name] = questions
-						new_count += 1
-					
-					# Set message for next render (after automatic rerun)
-					st.session_state.import_message = f"✅ Imported {new_count} category/categories! (Session only - will be lost on refresh)"
-					
-				except Exception as e:
-					st.error(f"❌ Error importing file: {e}")
+				# Check if we've already processed this file in this render
+				if not st.session_state.categories_just_imported:
+					try:
+						# Read and validate the JSON
+						imported_categories = json.load(uploaded_file)
+						
+						# Add to existing categories (session-only, not saved to filesystem)
+						new_count = 0
+						for category_name, questions in imported_categories.items():
+							st.session_state.categories[category_name] = questions
+							new_count += 1
+						
+						# Set message for next render
+						st.session_state.import_message = f"✅ Imported {new_count} category/categories! (Session only - will be lost on refresh)"
+						
+						# Set flag and trigger rerun to update dropdown immediately
+						st.session_state.categories_just_imported = True
+						st.rerun()
+						
+					except Exception as e:
+						st.error(f"❌ Error importing file: {e}")
+			else:
+				# Reset flag when no file is uploaded
+				st.session_state.categories_just_imported = False
 			
 			# Show pack info
 			st.markdown("---")
