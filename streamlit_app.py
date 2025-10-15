@@ -222,22 +222,24 @@ def main():
 		st.markdown(f"### Category: {st.session_state.current_category}")
 		st.markdown(f"### Question: {current_question}")
 		
-		# Answer input
-		col1, col2 = st.columns([3, 1])
-		
-		with col1:
-			user_input = st.text_input(
-				"Your answer:",
-				value=st.session_state.user_answer,
-				key="answer_input",
-				placeholder="Type your answer here...",
-				label_visibility="collapsed",
-				on_change=submit_answer
-			)
-			st.session_state.user_answer = user_input
-		
-		with col2:
-			if st.button("Submit", type="primary", use_container_width=True):
+		# Answer input with form for Enter key support
+		with st.form("answer_form", clear_on_submit=False):
+			col1, col2 = st.columns([3, 1])
+			
+			with col1:
+				user_input = st.text_input(
+					"Your answer:",
+					value=st.session_state.user_answer,
+					key="answer_input",
+					placeholder="Type your answer here...",
+					label_visibility="collapsed"
+				)
+				st.session_state.user_answer = user_input
+			
+			with col2:
+				submitted = st.form_submit_button("Submit", type="primary", use_container_width=True)
+			
+			if submitted:
 				submit_answer()
 		
 		# Feedback display
