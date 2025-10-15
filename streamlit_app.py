@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Page configuration
 st.set_page_config(
-	page_title="Flash Cards v0.0.13",
+	page_title="Flash Cards v0.0.14",
 	page_icon="📚",
 	layout="wide",
 	initial_sidebar_state="expanded"
@@ -85,7 +85,7 @@ def start_quiz(category):
 def submit_answer():
 	"""Process the user's answer"""
 	if not st.session_state.quiz_started or not st.session_state.current_category:
-		return
+		return False
 	
 	user_answer = st.session_state.user_answer.strip().lower()
 	questions = list(st.session_state.categories[st.session_state.current_category].keys())
@@ -104,9 +104,11 @@ def submit_answer():
 			# Move to next question
 			st.session_state.feedback = "✅ Correct! Next question:"
 			st.session_state.user_answer = ""
+		return True  # Correct answer, should rerun
 	else:
 		# Wrong answer - show feedback
 		st.session_state.feedback = "❌ Incorrect! Try again."
+		return False  # Incorrect answer, no need to rerun
 
 def reset_quiz():
 	"""Reset the quiz to the beginning"""
@@ -235,13 +237,15 @@ def main():
 					label_visibility="collapsed"
 				)
 			
-			with col2:
-				submitted = st.form_submit_button("Submit", type="primary", use_container_width=True)
-			
-			if submitted:
-				# Update session state with the current input value
-				st.session_state.user_answer = user_input
-				submit_answer()
+		with col2:
+			submitted = st.form_submit_button("Submit", type="primary", use_container_width=True)
+		
+		if submitted:
+			# Update session state with the current input value
+			st.session_state.user_answer = user_input
+			should_rerun = submit_answer()
+			if should_rerun:
+				st.rerun()
 		
 		# Feedback display
 		if st.session_state.feedback:
