@@ -231,7 +231,8 @@ def main():
 				value=st.session_state.user_answer,
 				key="answer_input",
 				placeholder="Type your answer here...",
-				label_visibility="collapsed"
+				label_visibility="collapsed",
+				on_change=submit_answer
 			)
 			st.session_state.user_answer = user_input
 		
