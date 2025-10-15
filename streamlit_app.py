@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Page configuration
 st.set_page_config(
-	page_title="Flash Cards v0.0.8",
+	page_title="Flash Cards v0.0.9",
 	page_icon="📚",
 	layout="wide",
 	initial_sidebar_state="expanded"
@@ -26,6 +26,8 @@ if 'user_answer' not in st.session_state:
 	st.session_state.user_answer = ""
 if 'feedback' not in st.session_state:
 	st.session_state.feedback = ""
+if 'import_message' not in st.session_state:
+	st.session_state.import_message = None
 
 def get_packs_directory():
 	"""Get the directory for storing flash card packs"""
@@ -148,7 +150,6 @@ def main():
 			# Start quiz button
 			if st.button("🚀 Start Quiz", type="primary", use_container_width=True):
 				start_quiz(selected_category)
-				st.rerun()
 			
 			# Reset quiz button
 			if st.button("🔄 Reset Quiz", use_container_width=True):
@@ -165,19 +166,24 @@ def main():
 				help="Upload a JSON file with flash card categories and questions"
 			)
 			
+			# Display import message if exists
+			if st.session_state.import_message:
+				st.success(st.session_state.import_message)
+				st.session_state.import_message = None
+			
 			if uploaded_file is not None:
 				try:
 					# Read and validate the JSON
 					imported_categories = json.load(uploaded_file)
 					
 					# Add to existing categories (session-only, not saved to filesystem)
+					new_count = 0
 					for category_name, questions in imported_categories.items():
 						st.session_state.categories[category_name] = questions
+						new_count += 1
 					
-					st.success(f"✅ Imported {len(imported_categories)} category/categories! (Session only - will be lost on refresh)")
-					
-					# Force page refresh to update the dropdown
-					st.rerun()
+					# Set message for next render (after automatic rerun)
+					st.session_state.import_message = f"✅ Imported {new_count} category/categories! (Session only - will be lost on refresh)"
 					
 				except Exception as e:
 					st.error(f"❌ Error importing file: {e}")
@@ -221,7 +227,6 @@ def main():
 		with col2:
 			if st.button("Submit", type="primary", use_container_width=True):
 				submit_answer()
-				st.rerun()
 		
 		# Feedback display
 		if st.session_state.feedback:
