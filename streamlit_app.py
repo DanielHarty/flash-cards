@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Page configuration
 st.set_page_config(
-	page_title="Flash Cards v0.0.12",
+	page_title="Flash Cards v0.0.13",
 	page_icon="📚",
 	layout="wide",
 	initial_sidebar_state="expanded"
@@ -234,12 +234,13 @@ def main():
 					placeholder="Type your answer here...",
 					label_visibility="collapsed"
 				)
-				st.session_state.user_answer = user_input
 			
 			with col2:
 				submitted = st.form_submit_button("Submit", type="primary", use_container_width=True)
 			
 			if submitted:
+				# Update session state with the current input value
+				st.session_state.user_answer = user_input
 				submit_answer()
 		
 		# Feedback display
