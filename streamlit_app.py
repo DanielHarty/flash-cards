@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Page configuration
 st.set_page_config(
-	page_title="Flash Cards v0.0.11",
+	page_title="Flash Cards v0.0.12",
 	page_icon="📚",
 	layout="wide",
 	initial_sidebar_state="expanded"
