@@ -7,29 +7,27 @@ from pathlib import Path
 
 # Page configuration
 st.set_page_config(
-	page_title="Flash Cards v0.0.14",
+	page_title="Flash Cards v0.0.15",
 	page_icon="📚",
 	layout="wide",
 	initial_sidebar_state="expanded"
 )
 
 # Initialize session state
-if 'categories' not in st.session_state:
-	st.session_state.categories = {}
-if 'current_question_index' not in st.session_state:
-	st.session_state.current_question_index = 0
-if 'current_category' not in st.session_state:
-	st.session_state.current_category = None
-if 'quiz_started' not in st.session_state:
-	st.session_state.quiz_started = False
-if 'user_answer' not in st.session_state:
-	st.session_state.user_answer = ""
-if 'feedback' not in st.session_state:
-	st.session_state.feedback = ""
-if 'import_message' not in st.session_state:
-	st.session_state.import_message = None
-if 'categories_just_imported' not in st.session_state:
-	st.session_state.categories_just_imported = False
+default_state = {
+	'categories': {},
+	'current_question_index': 0,
+	'current_category': None,
+	'quiz_started': False,
+	'user_answer': "",
+	'feedback': "",
+	'import_message': None,
+	'categories_just_imported': False
+}
+
+for key, value in default_state.items():
+	if key not in st.session_state:
+		st.session_state[key] = value
 
 def get_packs_directory():
 	"""Get the directory for storing flash card packs"""
